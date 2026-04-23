@@ -11,5 +11,6 @@ namespace SistemaEPI.Models
         public string Setor {get;set;} = string.Empty;
         public DateTime DataAdmissao {get;set;}
         public bool IsAtivo {get;set;} = true; 
+        public DateTime ? DeletedAt { get; set; }
     }
 }

@@ -20,6 +20,8 @@ namespace SistemaEPI.Data
             base.OnModelCreating(modelBuilder);
     
             modelBuilder.Entity<Epi>().HasQueryFilter(e => e.DeletedAt == null);
+
+            modelBuilder.Entity<Funcionario>().HasQueryFilter(f => f.DeletedAt == null);
         }
     }
 }
