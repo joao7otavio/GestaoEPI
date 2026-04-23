@@ -9,6 +9,7 @@ namespace SistemaEPI.Models
         public string NumeroCA {get;set;} = string.Empty;
         public DateTime ValidadeCA {get;set;}
         public int PeriodicidadeTrocaDias {get;set;}
-        public bool IsAtivo { get; set; } = true;
+        public bool IsAtivo { get; set; }
+        public DateTime ? DeletedAt { get; set; }
     }
 }

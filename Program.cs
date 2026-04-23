@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 using SistemaEPI.Data;
 using SistemaEPI.Models;
 
@@ -72,24 +73,26 @@ while (true)
 
             if (int.TryParse(idDigitado, out int idParaExcluir))
             {
-                var EpiParaRemover = db.Epis.Find(idParaExcluir);
+                var EpiParaRemover = db.Epis.IgnoreQueryFilters().FirstOrDefault(e => e.Id == idParaExcluir);
 
                 if (EpiParaRemover != null)
                 {
-                    db.Epis.Remove(EpiParaRemover);
-
-                    db.SaveChanges();
-                    Console.WriteLine($"=> SUCESSO: O EPI '{EpiParaRemover.Nome}' foi excluído permanentemente!");
+                    if (EpiParaRemover.DeletedAt != null)
+                    {
+                        Console.WriteLine($"=> AVISO: O EPI '{EpiParaRemover.Nome}' já se encontra na lixeira desde {EpiParaRemover.DeletedAt}.");
+                    }
+                    else
+                    {
+                        EpiParaRemover.DeletedAt = DateTime.Now;
+                        db.SaveChanges();
+                        Console.WriteLine($"=> SUCESSO: O EPI '{EpiParaRemover.Nome}' foi excluído permanentemente das consultas!");
+                    }
                 }
                 else
                 {
                     Console.WriteLine("=> ERRO: Nenhum EPI encontrado com esse ID no sistema.");
 
                 }
-            }
-            else
-            {
-                Console.WriteLine("=> ERRO: ID numérico inválido.");
             }
         }
         else if (opcao == "4")

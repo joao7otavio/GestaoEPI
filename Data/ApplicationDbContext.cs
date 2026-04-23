@@ -15,5 +15,11 @@ namespace SistemaEPI.Data
         {
             optionsBuilder.UseSqlite("Data Source=banco_epis.db");
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+    
+            modelBuilder.Entity<Epi>().HasQueryFilter(e => e.DeletedAt == null);
+        }
     }
 }
