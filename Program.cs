@@ -1,145 +1,331 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using SistemaEPI.Data;
 using SistemaEPI.Models;
 
+// ==========================================
+// ROTEADOR - MENU PRINCIPAL
+// ==========================================
 while (true)
 {
-    Console.WriteLine("\n==================================");
-    Console.WriteLine("   SISTEMA DE GESTÃO DE EPIs");
-    Console.WriteLine("==================================");
-    Console.WriteLine("1 - Cadastrar novo EPI");
-    Console.WriteLine("2 - Consultar estoque");
-    Console.WriteLine("3 - Excluir EPI");
-    Console.WriteLine("4 - Atualizar EPI");
+    Console.WriteLine("\n=========================================");
+    Console.WriteLine("   SISTEMA DE GESTÃO - MENU PRINCIPAL");
+    Console.WriteLine("=========================================");
+    Console.WriteLine("1 - Módulo de EPIs");
+    Console.WriteLine("2 - Módulo de Funcionários");
     Console.WriteLine("0 - Desligar sistema");
-    Console.Write("\nDigite a opção desejada: ");
+    Console.Write("\nDigite o módulo desejado: ");
 
-    string opcao = Console.ReadLine() ?? "";
+    string opcaoPrincipal = Console.ReadLine() ?? "";
 
-    if (opcao == "0")
+    if (opcaoPrincipal == "0")
     {
-        
         Console.WriteLine("Desligando as máquinas... Até logo!");
         break;
     }
-
-    using (var db = new ApplicationDbContext())
+    else if (opcaoPrincipal == "1")
     {
-        if (opcao == "1")
+        MenuEpis();
+    }
+    else if (opcaoPrincipal == "2")
+    {
+        MenuFuncionarios();
+    }
+    else
+    {
+        Console.WriteLine("\n=> ERRO: Módulo inválido.");
+    }
+}
+
+// ==========================================
+// MÉTODOS DOS MÓDULOS (FUNÇÕES)
+// ==========================================
+
+static void MenuEpis()
+{
+    while (true)
+    {
+        Console.WriteLine("\n--- MÓDULO DE EPIs ---");
+        Console.WriteLine("1 - Cadastrar novo EPI");
+        Console.WriteLine("2 - Consultar estoque");
+        Console.WriteLine("3 - Excluir EPI");
+        Console.WriteLine("4 - Atualizar EPI");
+        Console.WriteLine("0 - Voltar ao Menu Principal");
+        Console.Write("\nDigite a opção desejada: ");
+
+        string opcao = Console.ReadLine() ?? "";
+
+        if (opcao == "0") break; 
+
+        using (var db = new ApplicationDbContext())
         {
-            Console.WriteLine("\n--- NOVO CADASTRO ---");
-            Console.Write("Digite o Nome do equipamento: ");
-            string nomeDigitado = Console.ReadLine() ?? "";
-
-            Console.Write("Digite o número do CA: ");
-            string caDigitado = Console.ReadLine() ?? "";
-
-            var novoEpi = new Epi
+            if (opcao == "1")
             {
-                Nome = nomeDigitado,
-                NumeroCA = caDigitado,
-                ValidadeCA = new DateTime(2028, 1, 1),
-                PeriodicidadeTrocaDias = 180,
-                IsAtivo = true
-            };
+                Console.WriteLine("\n--- NOVO CADASTRO ---");
+                Console.Write("Digite o Nome do equipamento: ");
+                string nomeDigitado = Console.ReadLine() ?? "";
 
-            db.Epis.Add(novoEpi);
-            db.SaveChanges();
-            Console.WriteLine("=> SUCESSO: EPI salvo no banco de dados!");
-        }
-        else if (opcao == "2")
-        {
-            Console.WriteLine("\n--- ESTOQUE ATUAL ---");
-            var listaDeEpis = db.Epis.ToList();
+                Console.Write("Digite o número do CA: ");
+                string caDigitado = Console.ReadLine() ?? "";
 
-            if (listaDeEpis.Count == 0)
-            {
-                Console.WriteLine("O estoque está vazio.");
-            }
-            else
-            {
-                foreach (var epi in listaDeEpis)
+                var novoEpi = new Epi
                 {
-                    Console.WriteLine($"[ID: {epi.Id}] {epi.Nome} | CA: {epi.NumeroCA} | Status: {(epi.IsAtivo ? "Ativo" : "Inativo")}");
+                    Nome = nomeDigitado,
+                    NumeroCA = caDigitado,
+                    ValidadeCA = new DateTime(2028, 1, 1),
+                    PeriodicidadeTrocaDias = 180,
+                    IsAtivo = true
+                };
+
+                db.Epis.Add(novoEpi);
+                db.SaveChanges();
+                Console.WriteLine("=> SUCESSO: EPI salvo no banco de dados!");
+            }
+            else if (opcao == "2")
+            {
+                Console.WriteLine("\n--- ESTOQUE ATUAL ---");
+                var listaDeEpis = db.Epis.ToList();
+
+                if (listaDeEpis.Count == 0)
+                {
+                    Console.WriteLine("O estoque está vazio.");
+                }
+                else
+                {
+                    foreach (var epi in listaDeEpis)
+                    {
+                        Console.WriteLine($"[ID: {epi.Id}] {epi.Nome} | CA: {epi.NumeroCA} | Status: {(epi.IsAtivo ? "Ativo" : "Inativo")}");
+                    }
                 }
             }
-        }
-        else if (opcao == "3")
-        {
-            Console.WriteLine("\n--- EXCLUIR EQUIPAMENTO ---");
-            Console.Write("Digite o ID do EPI que deseja excluir: ");
-            string idDigitado = Console.ReadLine() ?? "";
-
-            if (int.TryParse(idDigitado, out int idParaExcluir))
+            else if (opcao == "3")
             {
-                var EpiParaRemover = db.Epis.IgnoreQueryFilters().FirstOrDefault(e => e.Id == idParaExcluir);
+                Console.WriteLine("\n--- EXCLUIR EQUIPAMENTO ---");
+                Console.Write("Digite o ID do EPI que deseja excluir: ");
+                string idDigitado = Console.ReadLine() ?? "";
 
-                if (EpiParaRemover != null)
+                if (int.TryParse(idDigitado, out int idParaExcluir))
                 {
-                    if (EpiParaRemover.DeletedAt != null)
+                    var EpiParaRemover = db.Epis.IgnoreQueryFilters().FirstOrDefault(e => e.Id == idParaExcluir);
+
+                    if (EpiParaRemover != null)
                     {
-                        Console.WriteLine($"=> AVISO: O EPI '{EpiParaRemover.Nome}' já se encontra na lixeira desde {EpiParaRemover.DeletedAt}.");
+                        if (EpiParaRemover.DeletedAt != null)
+                        {
+                            Console.WriteLine($"=> AVISO: O EPI '{EpiParaRemover.Nome}' já se encontra na lixeira desde {EpiParaRemover.DeletedAt}.");
+                        }
+                        else
+                        {
+                            EpiParaRemover.DeletedAt = DateTime.Now;
+                            db.SaveChanges();
+                            Console.WriteLine($"=> SUCESSO: O EPI '{EpiParaRemover.Nome}' foi movido para a lixeira permanentemente das consultas!");
+                        }
                     }
                     else
                     {
-                        EpiParaRemover.DeletedAt = DateTime.Now;
-                        db.SaveChanges();
-                        Console.WriteLine($"=> SUCESSO: O EPI '{EpiParaRemover.Nome}' foi excluído permanentemente das consultas!");
+                        Console.WriteLine("=> ERRO: Nenhum EPI encontrado com esse ID no sistema.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("=> ERRO: Nenhum EPI encontrado com esse ID no sistema.");
-
+                    Console.WriteLine("=> ERRO: ID numérico inválido.");
                 }
             }
-        }
-        else if (opcao == "4")
-        {
-            Console.WriteLine("\n--- ATUALIZAR EQUIPAMENTO ---");
-            Console.Write("Digite o ID do EPI que deseja atualizar: ");
-            string idDigitado = Console.ReadLine() ?? "";
-
-            if (int.TryParse(idDigitado, out int idParaEditar))
+            else if (opcao == "4")
             {
-                var epi = db.Epis.Find(idParaEditar);
+                Console.WriteLine("\n--- ATUALIZAR EQUIPAMENTO ---");
+                Console.Write("Digite o ID do EPI que deseja atualizar: ");
+                string idDigitado = Console.ReadLine() ?? "";
 
-                if (epi != null)
+                if (int.TryParse(idDigitado, out int idParaEditar))
                 {
-                    Console.WriteLine($"\nEditando: {epi.Nome} | CA atual: {epi.NumeroCA}");
-                    Console.WriteLine("(Deixe em branco e aperte Enter para manter o valor atual)");
+                    var epi = db.Epis.Find(idParaEditar);
 
-                    Console.Write("Novo Nome: ");
-                    string novoNome = Console.ReadLine() ?? "";
-                    if (!string.IsNullOrWhiteSpace(novoNome)) 
+                    if (epi != null)
                     {
-                        epi.Nome = novoNome;
-                    }
+                        Console.WriteLine($"\nEditando: {epi.Nome} | CA atual: {epi.NumeroCA}");
+                        Console.WriteLine("(Deixe em branco e aperte Enter para manter o valor atual)");
 
-                    Console.Write("Novo CA: ");
-                    string novoCA = Console.ReadLine() ?? "";
-                    if (!string.IsNullOrWhiteSpace(novoCA)) 
+                        Console.Write("Novo Nome: ");
+                        string novoNome = Console.ReadLine() ?? "";
+                        if (!string.IsNullOrWhiteSpace(novoNome)) 
+                        {
+                            epi.Nome = novoNome;
+                        }
+
+                        Console.Write("Novo CA: ");
+                        string novoCA = Console.ReadLine() ?? "";
+                        if (!string.IsNullOrWhiteSpace(novoCA)) 
+                        {
+                            epi.NumeroCA = novoCA;
+                        }
+
+                        db.SaveChanges(); 
+                        Console.WriteLine("\n=> SUCESSO: Equipamento atualizado com sucesso!");
+                    }
+                    else
                     {
-                        epi.NumeroCA = novoCA;
+                        Console.WriteLine("=> ERRO: Nenhum EPI encontrado com esse ID.");
                     }
-
-                    db.SaveChanges(); 
-                    Console.WriteLine("\n=> SUCESSO: Equipamento atualizado com sucesso!");
                 }
-                 else
+                else
                 {
-                    Console.WriteLine("=> ERRO: Nenhum EPI encontrado com esse ID.");
+                    Console.WriteLine("=> ERRO: ID numérico inválido.");
                 }
             }
             else
             {
-                Console.WriteLine("=> ERRO: ID numérico inválido.");
+                Console.WriteLine("\n=> ERRO: Comando inválido. Tente novamente.");
             }
         }
-        else
+    }
+}
+
+static void MenuFuncionarios()
+{
+    while (true)
+    {
+        Console.WriteLine("\n--- MÓDULO DE FUNCIONÁRIOS ---");
+        Console.WriteLine("1 - Cadastrar Funcionário");
+        Console.WriteLine("2 - Consultar Funcionários");
+        Console.WriteLine("3 - Excluir Funcionário");
+        Console.WriteLine("4 - Atualizar Funcionário");
+        Console.WriteLine("0 - Voltar ao Menu Principal");
+        Console.Write("\nDigite a opção desejada: ");
+
+        string opcao = Console.ReadLine() ?? "";
+
+        if (opcao == "0") break;
+
+        using (var db = new ApplicationDbContext())
         {
-            Console.WriteLine("\n=> ERRO: Comando inválido. Tente novamente.");
+            if (opcao == "1")
+            {
+                Console.WriteLine("\n--- NOVO CADASTRO DE FUNCIONÁRIO ---");
+                
+                Console.Write("Digite o Nome: ");
+                string nomeDigitado = Console.ReadLine() ?? "";
+
+                Console.Write("Digite o CPF: ");
+                string cpfDigitado = Console.ReadLine() ?? "";
+
+                Console.Write("Digite o Cargo: ");
+                string cargoDigitado = Console.ReadLine() ?? "";
+
+                Console.Write("Digite o Setor: ");
+                string setorDigitado = Console.ReadLine() ?? "";
+
+                var novoFuncionario = new Funcionario
+                {
+                    Nome = nomeDigitado,
+                    Cpf = cpfDigitado,
+                    Cargo = cargoDigitado,
+                    Setor = setorDigitado,
+                    DataAdmissao = DateTime.Now,
+                    IsAtivo = true
+                };
+
+                db.Funcionarios.Add(novoFuncionario);
+                db.SaveChanges();
+                Console.WriteLine($"=> SUCESSO: Funcionário(a) '{novoFuncionario.Nome}' cadastrado(a) no banco de dados!");
+            }
+
+            else if (opcao == "2")
+            {
+                Console.WriteLine("\n--- LISTA DE FUNCIONÁRIOS ---");
+                var listaFuncionarios = db.Funcionarios.ToList();
+
+                if (listaFuncionarios.Count == 0)
+                {
+                    Console.WriteLine("Nenhum funcionário ativo encontrado no sistema.");
+                }
+                else
+                {
+                    foreach (var func in listaFuncionarios)
+                    {
+                        Console.WriteLine($"[ID: {func.Id}] {func.Nome} | Cargo: {func.Cargo} | Setor: {func.Setor}");
+                    }
+                }
+            }
+
+            else if (opcao == "3")
+            {
+                Console.WriteLine("\n--- EXCLUIR FUNCIONÁRIO ---");
+                Console.Write("Digite o ID do funcionário que deseja excluir: ");
+                string idDigitado = Console.ReadLine() ?? "";
+
+                if (int.TryParse(idDigitado, out int idParaExcluir))
+                {
+                    var funcionarioParaRemover = db.Funcionarios.IgnoreQueryFilters().FirstOrDefault(f => f.Id == idParaExcluir);
+
+                    if (funcionarioParaRemover != null)
+                    {
+                        if (funcionarioParaRemover.DeletedAt != null)
+                        {
+                            Console.WriteLine($"=> AVISO: O(a) funcionário(a) '{funcionarioParaRemover.Nome}' já se encontra na lixeira desde {funcionarioParaRemover.DeletedAt}.");
+                        }
+                        else
+                        {
+                            funcionarioParaRemover.DeletedAt = DateTime.Now;
+                            db.SaveChanges();
+                            Console.WriteLine($"=> SUCESSO: O(a) funcionário(a) '{funcionarioParaRemover.Nome}' foi movido(a) para a lixeira permanentemente!");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("=> ERRO: Nenhum funcionário encontrado com esse ID no sistema.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("=> ERRO: ID numérico inválido.");
+                }
+            }
+
+            else if (opcao == "4")
+            {
+                Console.WriteLine("\n--- ATUALIZAR FUNCIONÁRIO ---");
+                Console.Write("Digite o ID do funcionário que deseja atualizar: ");
+                string idDigitado = Console.ReadLine() ?? "";
+
+                if (int.TryParse(idDigitado, out int idParaEditar))
+                {
+                    var func = db.Funcionarios.Find(idParaEditar);
+
+                    if (func != null)
+                    {
+                        Console.WriteLine($"\nEditando: {func.Nome} | Cargo atual: {func.Cargo} | Setor atual: {func.Setor}");
+                        Console.WriteLine("(Deixe em branco e aperte Enter para manter o valor atual)");
+
+                        Console.Write("Novo Nome: ");
+                        string novoNome = Console.ReadLine() ?? "";
+                        if (!string.IsNullOrWhiteSpace(novoNome)) func.Nome = novoNome;
+
+                        Console.Write("Novo Cargo: ");
+                        string novoCargo = Console.ReadLine() ?? "";
+                        if (!string.IsNullOrWhiteSpace(novoCargo)) func.Cargo = novoCargo;
+
+                        Console.Write("Novo Setor: ");
+                        string novoSetor = Console.ReadLine() ?? "";
+                        if (!string.IsNullOrWhiteSpace(novoSetor)) func.Setor = novoSetor;
+
+                        db.SaveChanges(); 
+                        Console.WriteLine("\n=> SUCESSO: Cadastro do funcionário atualizado!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("=> ERRO: Nenhum funcionário encontrado com esse ID.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("=> ERRO: ID numérico inválido.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n=> ERRO: Comando inválido. Tente novamente.");
+            }
         }
-    } 
-} 
+    }
+}

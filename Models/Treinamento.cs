@@ -13,6 +13,7 @@ namespace SistemaEPI.Models
         public string StatusVencimento {get;set;} = string.Empty;
         public int ResponsavelRegistroId {get;set;}
         public Usuario? ResponsavelRegistro { get; set; }
+        public DateTime? DeletedAt { get; set; }
          public bool IsAtivo { get; set; } = true;
     }
 }

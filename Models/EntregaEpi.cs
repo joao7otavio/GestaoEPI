@@ -14,6 +14,7 @@ namespace SistemaEPI.Models
         public string? AssinaturaDigitalHash {get;set;}
         public int ResponsavelRegistroId {get;set;}
         public Usuario? ResponsavelRegistro {get; set;}
+        public DateTime? DeletedAt { get; set; }
         public bool IsAtivo { get; set; } = true;
     }
 }

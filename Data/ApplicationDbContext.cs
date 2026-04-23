@@ -22,6 +22,12 @@ namespace SistemaEPI.Data
             modelBuilder.Entity<Epi>().HasQueryFilter(e => e.DeletedAt == null);
 
             modelBuilder.Entity<Funcionario>().HasQueryFilter(f => f.DeletedAt == null);
+
+            modelBuilder.Entity<EntregaEpi>().HasQueryFilter(x => x.DeletedAt == null);
+
+            modelBuilder.Entity<Treinamento>().HasQueryFilter(x => x.DeletedAt == null);
+            
+            modelBuilder.Entity<Usuario>().HasQueryFilter(x => x.DeletedAt == null);
         }
     }
 }
