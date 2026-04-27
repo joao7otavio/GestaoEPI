@@ -206,33 +206,42 @@ static void MenuFuncionarios()
         {
             if (opcao == "1")
             {
-                Console.WriteLine("\n--- NOVO CADASTRO DE FUNCIONÁRIO ---");
+                Console.WriteLine("\n--- CADASTRO DE NOVO FUNCIONÁRIO ---");
                 
-                Console.Write("Digite o Nome: ");
-                string nomeDigitado = Console.ReadLine() ?? "";
+                Console.Write("Nome Completo: ");
+                string nome = Console.ReadLine() ?? "";
 
-                Console.Write("Digite o CPF: ");
-                string cpfDigitado = Console.ReadLine() ?? "";
+                string cpf = "";
+                while (string.IsNullOrWhiteSpace(cpf))
+                {
+                    Console.Write("CPF: ");
+                    cpf = Console.ReadLine() ?? "";
 
-                Console.Write("Digite o Cargo: ");
-                string cargoDigitado = Console.ReadLine() ?? "";
+                    if (string.IsNullOrWhiteSpace(cpf))
+                    {
+                        Console.WriteLine("=> ERRO: O CPF não pode ficar vazio. Tente novamente.");
+                    }
+                }
+                
+                Console.Write("Cargo: ");
+                string cargo = Console.ReadLine() ?? "";
 
-                Console.Write("Digite o Setor: ");
-                string setorDigitado = Console.ReadLine() ?? "";
+                Console.Write("Setor: ");
+                string setor = Console.ReadLine() ?? "";
 
                 var novoFuncionario = new Funcionario
                 {
-                    Nome = nomeDigitado,
-                    Cpf = cpfDigitado,
-                    Cargo = cargoDigitado,
-                    Setor = setorDigitado,
+                    Nome = nome,
+                    Cpf = cpf,
+                    Cargo = cargo,
+                    Setor = setor,
                     DataAdmissao = DateTime.Now,
                     IsAtivo = true
                 };
 
                 db.Funcionarios.Add(novoFuncionario);
                 db.SaveChanges();
-                Console.WriteLine($"=> SUCESSO: Funcionário(a) '{novoFuncionario.Nome}' cadastrado(a) no banco de dados!");
+                Console.WriteLine("\n=> SUCESSO: Funcionário cadastrado com sucesso!");
             }
 
             else if (opcao == "2")
